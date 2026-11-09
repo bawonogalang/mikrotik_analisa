@@ -1,0 +1,15 @@
+# Rahasia: password user webmon, alamat router, SSH key
+.env
+*.key
+mt_ternate_webmon
+buka-tunnel.cmd
+
+# Data jaringan kantor (nama perangkat, IP, MAC, pemakaian) dan log
+data/
+data-demo/
+logs/
+rekap/
+*.log
+
+# Pengaturan lokal editor/Claude
+.claude/

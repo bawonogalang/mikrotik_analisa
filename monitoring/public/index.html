@@ -1,0 +1,1303 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOC WiFi Ternate</title>
+<script>
+  // Tema dipilih sebelum halaman digambar supaya tidak berkedip
+  try { const t = localStorage.getItem('mt-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #eef1f5;
+    --surface: #ffffff;
+    --head: #f6f8fa;
+    --sunken: #f3f5f8;
+    --ink: #16202b;
+    --ink-2: #4b5765;
+    --muted: #7a8593;
+    --grid: #e3e7ec;
+    --axis: #c4cbd4;
+    --border: #dbe1e8;
+    --track: #e8ecf1;
+    --nav: #1d2a3a;
+    --nav-2: #2a3a4e;
+    --nav-ink: #eef3f8;
+    --nav-muted: #a9b6c6;
+    --accent: #2a78d6;
+    --s1: #2a78d6;
+    --s2: #eb6834;
+    --s-main: #6250d6;
+    --c-top: #2a78d6;
+    --c-office: #eb6834;
+    --c-normal: #1baf7a;
+    --c-bulk: #eda100;
+    --c-other: #c4cbd4;
+    --good: #0ca30c;
+    --warning: #fab219;
+    --critical: #d03b3b;
+    --unknown: #9aa4b1;
+    --good-bg: #e8f6e8;
+    --warn-bg: #fff6e0;
+    --bad-bg: #fdecec;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0e1319;
+      --surface: #171e27;
+      --head: #1b2430;
+      --sunken: #131a22;
+      --ink: #e7ecf2;
+      --ink-2: #b4bfcc;
+      --muted: #8492a3;
+      --grid: #263140;
+      --axis: #3a4757;
+      --border: #2a3544;
+      --track: #243040;
+      --nav: #0a0f15;
+      --nav-2: #18212c;
+      --accent: #3987e5;
+      --s1: #3987e5;
+      --s2: #d95926;
+      --s-main: #9085e9;
+      --c-top: #3987e5;
+      --c-office: #d95926;
+      --c-normal: #199e70;
+      --c-bulk: #c98500;
+      --c-other: #4a5666;
+      --unknown: #5d6a7a;
+      --good-bg: #13291a;
+      --warn-bg: #2e2510;
+      --bad-bg: #321617;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0e1319;
+    --surface: #171e27;
+    --head: #1b2430;
+    --sunken: #131a22;
+    --ink: #e7ecf2;
+    --ink-2: #b4bfcc;
+    --muted: #8492a3;
+    --grid: #263140;
+    --axis: #3a4757;
+    --border: #2a3544;
+    --track: #243040;
+    --nav: #0a0f15;
+    --nav-2: #18212c;
+    --accent: #3987e5;
+    --s1: #3987e5;
+    --s2: #d95926;
+    --s-main: #9085e9;
+    --c-top: #3987e5;
+    --c-office: #d95926;
+    --c-normal: #199e70;
+    --c-bulk: #c98500;
+    --c-other: #4a5666;
+    --unknown: #5d6a7a;
+    --good-bg: #13291a;
+    --warn-bg: #2e2510;
+    --bad-bg: #321617;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.45 "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  h1, h2, h3 { margin: 0; }
+  .num, .tabnum { font-variant-numeric: tabular-nums; }
+
+  /* ---------- Bar navigasi atas ---------- */
+  .nav { position: sticky; top: 0; z-index: 10; background: var(--nav); color: var(--nav-ink); box-shadow: 0 1px 0 rgba(0,0,0,.25); }
+  .nav-in { max-width: 1440px; margin: 0 auto; padding: 0 16px; height: 56px; display: flex; align-items: center; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .brand-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--accent); display: grid; place-items: center; flex: none; }
+  .brand-mark svg { width: 20px; height: 20px; }
+  .brand h1 { font-size: 15px; font-weight: 700; letter-spacing: .01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .t-short { display: none; }
+  .brand p { margin: 0; font-size: 12px; color: var(--nav-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand > div { min-width: 0; }
+  .nav-links { display: flex; gap: 2px; margin-left: 12px; }
+  .nav-links a { color: var(--nav-muted); text-decoration: none; font-size: 13px; padding: 6px 10px; border-radius: 6px; }
+  .nav-links a:hover { color: var(--nav-ink); background: var(--nav-2); }
+  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .live { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 999px; background: var(--nav-2); font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .live small { font-weight: 400; color: var(--nav-muted); }
+  .theme-seg { display: inline-flex; background: var(--nav-2); border-radius: 8px; padding: 2px; }
+  .theme-seg button { font: inherit; font-size: 12px; color: var(--nav-muted); background: transparent; border: 0; border-radius: 6px; padding: 5px 9px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+  .theme-seg button svg { width: 14px; height: 14px; }
+  .theme-seg button.on { background: var(--nav); color: var(--nav-ink); font-weight: 600; }
+  .theme-seg button:focus-visible { outline: 2px solid var(--accent); }
+
+  .wrap { max-width: 1440px; margin: 0 auto; padding: 16px 16px 40px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--unknown); flex: none; display: inline-block; }
+  .dot.good { background: var(--good); }
+  .dot.warn { background: var(--warning); }
+  .dot.bad { background: var(--critical); }
+  .live .dot.good { box-shadow: 0 0 0 3px rgba(12, 163, 12, .25); }
+  .banner { border: 1px solid var(--critical); border-left-width: 4px; background: var(--bad-bg); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
+  .banner b { display: block; margin-bottom: 2px; }
+  .banner code { font-size: 12px; color: var(--ink-2); word-break: break-word; }
+
+  /* ---------- Panel ---------- */
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); min-width: 0; display: flex; flex-direction: column; }
+  .ph { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--head); border-bottom: 1px solid var(--border); border-radius: 10px 10px 0 0; }
+  .ph h2 { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+  .ph .hint { margin: 0; }
+  .pb { padding: 14px; flex: 1; min-width: 0; }
+  .hint { color: var(--muted); font-size: 12px; margin: 2px 0 0; }
+  .empty { color: var(--muted); text-align: center; padding: 36px 0; margin: 0; }
+  .row { display: grid; gap: 14px; margin-bottom: 14px; }
+  .r-2-1 { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+  .r-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .r-1-1 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; color: var(--ink-2); font-size: 12px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 10px; height: 10px; border-radius: 3px; flex: none; display: inline-block; }
+
+  /* ---------- Topologi ---------- */
+  .topo { display: flex; align-items: flex-start; padding: 8px 2px 2px; }
+  .node { flex: 0 0 120px; text-align: center; padding: 10px 6px; border-radius: 10px; border: 1px solid transparent; }
+  .node.bad { background: var(--bad-bg); border-color: var(--critical); }
+  .node.warn { background: var(--warn-bg); border-color: var(--warning); }
+  .n-ic { position: relative; width: 56px; height: 56px; margin: 0 auto 8px; border-radius: 14px; background: var(--sunken); border: 1px solid var(--border); display: grid; place-items: center; color: var(--ink-2); }
+  .n-ic svg { width: 30px; height: 30px; }
+  .badge { position: absolute; right: -7px; bottom: -7px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; color: #fff; background: var(--unknown); border: 2px solid var(--surface); line-height: 1; }
+  .badge.good { background: var(--good); }
+  .badge.warn { background: var(--warning); color: #1b1b1b; }
+  .badge.bad { background: var(--critical); }
+  .n-t { font-weight: 700; font-size: 13px; }
+  .n-m { font-size: 18px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+  .n-m small { font-size: 12px; font-weight: 500; color: var(--ink-2); margin-left: 2px; }
+  .n-s { color: var(--muted); font-size: 12px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .n-st { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-2); margin-top: 4px; }
+  .link { flex: 1 1 0; min-width: 48px; display: flex; flex-direction: column; align-items: stretch; text-align: center; padding-top: 22px; }
+  .link i { display: block; height: 4px; border-radius: 2px; background: var(--unknown); margin: 6px 0; }
+  .link.good i { background: var(--good); }
+  .link.warn i { background: repeating-linear-gradient(90deg, var(--warning) 0 10px, transparent 10px 15px); }
+  .link.bad i { background: repeating-linear-gradient(90deg, var(--critical) 0 6px, transparent 6px 11px); }
+  .l-lbl, .l-sub { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; line-height: 1.35; }
+  .l-lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .l-sub { color: var(--muted); }
+  .topo-foot { display: flex; flex-wrap: wrap; gap: 6px 18px; border-top: 1px solid var(--grid); margin-top: 12px; padding-top: 10px; font-size: 12px; color: var(--ink-2); }
+  .topo-foot span { display: inline-flex; align-items: center; gap: 6px; }
+
+  /* ---------- Alert ---------- */
+  .counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .count { border-radius: 8px; padding: 8px 10px; background: var(--sunken); border: 1px solid var(--border); }
+  .count b { display: block; font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .count span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); }
+  .findings { list-style: none; margin: 0; padding: 0; max-height: 420px; overflow-y: auto; }
+  .findings li { display: grid; grid-template-columns: 4px minmax(0, 1fr); gap: 10px; padding: 9px 0; border-top: 1px solid var(--grid); }
+  .findings li:first-child { border-top: 0; padding-top: 0; }
+  .findings .bar { border-radius: 2px; background: var(--unknown); }
+  .findings .bar.good { background: var(--good); }
+  .findings .bar.warn { background: var(--warning); }
+  .findings .bar.bad { background: var(--critical); }
+  .findings .f-h { display: flex; gap: 8px; align-items: baseline; justify-content: space-between; }
+  .findings b { font-weight: 600; font-size: 13px; }
+  .findings p { margin: 2px 0 0; color: var(--ink-2); font-size: 12.5px; }
+  .lvl { font-size: 11px; font-weight: 600; color: var(--ink-2); border: 1px solid var(--border); border-radius: 4px; padding: 0 6px; white-space: nowrap; flex: none; }
+
+  /* ---------- Gauge ---------- */
+  .gauges { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+  .gauge { text-align: center; padding: 4px 4px 2px; min-width: 0; }
+  .gauge svg { display: block; width: 100%; max-width: 150px; height: auto; margin: 0 auto; }
+  .gauge .gv { fill: var(--ink); font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .gauge .gu { fill: var(--muted); font-size: 10px; }
+  .g-label { font-weight: 600; font-size: 13px; margin-top: -4px; }
+  .g-sub { display: inline-flex; align-items: center; gap: 5px; color: var(--ink-2); font-size: 12px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .bignum { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+  .bignum .v { font-size: 40px; font-weight: 700; letter-spacing: -.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .bignum .v small { font-size: 15px; color: var(--ink-2); font-weight: 500; }
+
+  /* ---------- Grafik ---------- */
+  .chart { position: relative; height: 240px; }
+  .hchart { position: relative; height: 210px; }
+  .chart svg, .hchart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .chart text, .hchart text { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .chart .end-label { fill: var(--ink-2); font-size: 11px; font-weight: 600; }
+  .tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 6px 20px rgba(0,0,0,.18); border-radius: 8px; padding: 8px 10px; font-size: 12px; min-width: 160px; z-index: 20; }
+  .tip .t { color: var(--muted); margin-bottom: 4px; }
+  .tip .row { display: flex; justify-content: space-between; gap: 12px; margin: 0; }
+  .tip .row b { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  /* ---------- QoS & blokir ---------- */
+  .qos-row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 4px 12px; align-items: center; padding: 8px 0; border-top: 1px solid var(--grid); }
+  .qos-row:first-child { border-top: 0; padding-top: 0; }
+  .qos-name { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
+  .qos-name small { display: block; color: var(--muted); font-weight: 400; font-size: 11px; }
+  .bar-track { height: 12px; border-radius: 4px; background: var(--track); overflow: hidden; }
+  .bar-track > i { display: block; height: 100%; border-radius: 0 4px 4px 0; transition: width .4s ease; }
+  .qos-vals { grid-column: 2; color: var(--ink-2); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .blk-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .blk-stat { border: 1px solid var(--border); background: var(--sunken); border-radius: 8px; padding: 8px 10px; }
+  .blk-stat .n { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .blk-stat .l { color: var(--ink-2); font-size: 12px; }
+  .blk-list { list-style: none; margin: 0; padding: 0; max-height: 240px; overflow-y: auto; }
+  .blk-list li { display: flex; justify-content: space-between; gap: 8px; padding: 5px 0; border-top: 1px solid var(--grid); font-size: 13px; }
+  .blk-list li span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .blk-list li b { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .tag { display: inline-block; font-size: 11px; color: var(--ink-2); border: 1px solid var(--border); border-radius: 4px; padding: 0 5px; margin-right: 6px; }
+
+  /* ---------- Kontrol ---------- */
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .controls input[type=search], .controls select { font: inherit; font-size: 13px; color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; }
+  .controls input[type=search] { width: 220px; max-width: 100%; }
+  .controls label { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 13px; cursor: pointer; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--surface); }
+  .seg button { font: inherit; font-size: 13px; color: var(--ink-2); background: transparent; border: 0; padding: 5px 12px; cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
+  .btn { font-size: 13px; color: var(--ink); text-decoration: none; border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; background: var(--surface); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { background: var(--head); }
+  .btn svg { width: 14px; height: 14px; }
+  .section-title { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin: 22px 0 12px; }
+  .section-title h2 { font-size: 17px; font-weight: 700; }
+
+  /* ---------- Tabel ---------- */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 860px; }
+  th, td { text-align: left; padding: 8px 12px; border-top: 1px solid var(--grid); vertical-align: middle; }
+  thead th { color: var(--ink-2); font-weight: 600; font-size: 12px; border-top: 0; white-space: nowrap; background: var(--sunken); position: sticky; top: 0; }
+  tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--sunken) 55%, transparent); }
+  tbody tr:hover td { background: var(--head); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.ip { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .host b { font-weight: 600; display: block; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .host small { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .st { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; color: var(--ink-2); }
+  tr.off td { color: var(--muted); }
+  .stack { display: flex; gap: 2px; height: 10px; width: 160px; }
+  .stack i { display: block; height: 100%; min-width: 2px; }
+  .stack i:first-child { border-radius: 4px 0 0 4px; }
+  .stack i:last-child { border-radius: 0 4px 4px 0; }
+  .stack i:only-child { border-radius: 4px; }
+  .mix { display: flex; flex-direction: column; gap: 4px; }
+  .mix small { color: var(--ink-2); font-size: 11px; white-space: nowrap; }
+  .usage-bar { height: 8px; border-radius: 0 4px 4px 0; background: var(--s1); min-width: 2px; }
+  .flush { padding: 0; }
+  .flush .legend { padding: 10px 14px; border-top: 1px solid var(--grid); }
+
+  .sys { display: flex; flex-wrap: wrap; gap: 6px 20px; color: var(--muted); font-size: 12px; margin-top: 16px; }
+
+  @media (max-width: 1200px) {
+    .gauges { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 14px; }
+    .r-3 { grid-template-columns: minmax(0, 1fr); }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 1000px) {
+    .r-2-1, .r-1-1 { grid-template-columns: minmax(0, 1fr); }
+    .blk-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 760px) {
+    .topo { flex-direction: column; align-items: stretch; }
+    .node { flex: none; display: grid; grid-template-columns: 56px minmax(0, 1fr); column-gap: 14px; text-align: left; align-items: center; }
+    .node .n-ic { grid-row: 1 / span 5; margin: 0; }
+    .link { flex: none; flex-direction: row; align-items: center; gap: 10px; padding: 0 0 0 33px; min-height: 40px; text-align: left; }
+    .link i { width: 4px; height: 40px; margin: 0; flex: none; }
+    .link.warn i { background: repeating-linear-gradient(180deg, var(--warning) 0 8px, transparent 8px 12px); }
+    .link.bad i { background: repeating-linear-gradient(180deg, var(--critical) 0 5px, transparent 5px 9px); }
+    .live small, .theme-seg button span { display: none; }
+    .brand p, #subnet { display: none; }
+    .t-long { display: none; }
+    .t-short { display: inline; }
+  }
+  @media (max-width: 520px) {
+    .gauges { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .qos-row { grid-template-columns: minmax(0, 1fr); }
+    .qos-vals { grid-column: 1; }
+    .controls input[type=search] { width: 100%; }
+    .nav-in { gap: 8px; }
+    .brand h1 { font-size: 14px; }
+    .brand-mark { display: none; }
+  }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-in">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-8 4 16 3-8h6"/></svg></span>
+      <div>
+        <h1><span class="t-long">NOC WiFi Kota Ternate</span><span class="t-short">NOC Ternate</span> <span id="subnet" style="font-weight:500;color:var(--nav-muted)">172.19.26.x</span></h1>
+        <p id="routerName">Menghubungkan ke router…</p>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#ringkasan">Ringkasan</a>
+      <a href="#trafik">Trafik</a>
+      <a href="#analisa">Analisa</a>
+      <a href="#client">Client</a>
+    </div>
+    <div class="nav-right">
+      <span class="live" title="Status koneksi ke router"><span class="dot" id="statusDot"></span><span id="statusText">Menghubungkan</span><small id="updated"></small></span>
+      <div class="theme-seg" role="group" aria-label="Tema tampilan" id="themeSeg">
+        <button type="button" data-theme-set="auto" title="Ikuti Windows"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span>Auto</span></button>
+        <button type="button" data-theme-set="light" title="Tema terang"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Terang</span></button>
+        <button type="button" data-theme-set="dark" title="Tema gelap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg><span>Gelap</span></button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="banner" id="banner" hidden></div>
+
+  <div class="row r-2-1" id="ringkasan">
+    <section class="panel">
+      <header class="ph"><h2>Peta jaringan</h2><p class="hint">Jalur dari internet sampai perangkat WiFi · merah = sumber masalah</p></header>
+      <div class="pb">
+        <div class="topo" id="topo"><p class="empty" style="width:100%">Menghubungkan ke router…</p></div>
+        <div class="topo-foot" id="topoFoot"></div>
+      </div>
+    </section>
+    <section class="panel">
+      <header class="ph"><h2>Alert &amp; temuan</h2><p class="hint" id="alertHint">dari riwayat 24 jam</p></header>
+      <div class="pb">
+        <div class="counts" id="counts"></div>
+        <ul class="findings" id="findings"><li><span class="bar"></span><div><b>Memuat…</b></div></li></ul>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-bottom:14px">
+    <header class="ph"><h2>Kinerja saat ini</h2><p class="hint">Jarum merah/kuning = mendekati batas</p></header>
+    <div class="pb"><div class="gauges" id="gauges"></div></div>
+  </section>
+
+  <div class="row r-2-1" id="trafik">
+    <section class="panel">
+      <header class="ph">
+        <div><h2>Trafik internet live (ether1)</h2><p class="hint" id="chartHint">±6 menit terakhir</p></div>
+        <div class="legend">
+          <span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--s1)" stroke-width="2.5" stroke-linecap="round"/></svg>Download</span>
+          <span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--s2)" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round"/></svg>Upload</span>
+          <span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--critical)" stroke-width="1" stroke-dasharray="2 3"/></svg>Batas QoS</span>
+        </div>
+      </header>
+      <div class="pb"><div class="chart" id="chart"><p class="empty">Mengumpulkan data…</p></div></div>
+    </section>
+    <section class="panel">
+      <header class="ph"><h2>Pemakaian per prioritas (QoS)</h2><p class="hint">Download dibanding batas total</p></header>
+      <div class="pb" id="qos"><p class="empty">Belum ada data queue QOS-26.</p></div>
+    </section>
+  </div>
+
+  <div class="section-title" id="analisa">
+    <div>
+      <h2>Analisa riwayat</h2>
+      <p class="hint" id="anaHint">Memuat riwayat…</p>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Rentang waktu" id="range">
+        <button type="button" data-h="6">6 jam</button>
+        <button type="button" data-h="24" class="on">24 jam</button>
+        <button type="button" data-h="168">7 hari</button>
+      </div>
+      <a class="btn" id="csvLink" href="/api/export.csv" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>Unduh CSV hari ini</a>
+    </div>
+  </div>
+
+  <div class="row r-3">
+    <section class="panel">
+      <header class="ph"><h2>Download internet</h2></header>
+      <div class="pb">
+        <div class="legend" style="margin-bottom:8px">
+          <span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--s1)" stroke-width="2.5" stroke-linecap="round"/></svg>Rata-rata</span>
+          <span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--ink-2)" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round"/></svg>Puncak</span>
+          <span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--critical)" stroke-width="1" stroke-dasharray="2 3"/></svg>Batas QoS</span>
+          <span><span class="sw" style="background:var(--critical);opacity:.3"></span>Router tak terjangkau</span>
+        </div>
+        <div class="hchart" id="hBw"><p class="empty">Memuat…</p></div>
+      </div>
+    </section>
+    <section class="panel">
+      <header class="ph"><h2>Ping (latensi)</h2><p class="hint">di atas 150 ms terasa lambat</p></header>
+      <div class="pb">
+        <div class="legend" id="pingLegend" style="margin-bottom:8px"></div>
+        <div class="hchart" id="hPing"><p class="empty">Memuat…</p></div>
+      </div>
+    </section>
+    <section class="panel">
+      <header class="ph"><h2>Perangkat &amp; IP DHCP</h2><p class="hint">IP habis = WiFi gagal konek</p></header>
+      <div class="pb">
+        <div class="legend" style="margin-bottom:8px">
+          <span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--s-main)" stroke-width="2.5" stroke-linecap="round"/></svg>Perangkat online</span>
+          <span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--ink-2)" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round"/></svg>IP DHCP terpakai</span>
+          <span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--critical)" stroke-width="1" stroke-dasharray="2 3"/></svg>Kapasitas pool</span>
+        </div>
+        <div class="hchart" id="hDev"><p class="empty">Memuat…</p></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="row r-1-1">
+    <section class="panel">
+      <header class="ph"><h2>Top 15 pemakaian data hari ini</h2><p class="hint" id="usageHint">sejak pukul 00.00</p></header>
+      <div class="pb flush">
+        <div class="table-wrap">
+          <table style="min-width:560px">
+            <thead><tr><th>Perangkat</th><th>IP</th><th class="num">Download</th><th class="num">Upload</th><th class="num">Total</th><th style="width:26%">Porsi</th></tr></thead>
+            <tbody id="usage"><tr><td colspan="6"><p class="empty">Memuat…</p></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
+      <header class="ph"><h2>Blokir judi &amp; game online</h2><p class="hint">paket ditolak sejak script dipasang</p></header>
+      <div class="pb" id="blocked"><p class="empty">Belum ada data.</p></div>
+    </section>
+  </div>
+
+  <section class="panel" id="client">
+    <header class="ph">
+      <div><h2>Client WiFi</h2><p class="hint" id="clientHint">–</p></div>
+      <div class="controls">
+        <input type="search" id="q" placeholder="Cari nama, IP, atau MAC" aria-label="Cari client">
+        <label><input type="checkbox" id="onlyOnline" checked> Online saja</label>
+        <select id="sort" aria-label="Urutkan">
+          <option value="down">Urut: download</option>
+          <option value="up">Urut: upload</option>
+          <option value="sess">Urut: data sesi</option>
+          <option value="name">Urut: nama</option>
+          <option value="ip">Urut: IP</option>
+        </select>
+      </div>
+    </header>
+    <div class="pb flush">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Perangkat</th>
+              <th>IP</th>
+              <th>Status</th>
+              <th class="num">Download</th>
+              <th class="num">Upload</th>
+              <th>Pemakaian per prioritas</th>
+              <th class="num">Koneksi</th>
+              <th class="num">Data sesi aktif</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="legend" id="classLegend"></div>
+    </div>
+  </section>
+
+  <div class="sys" id="sys"></div>
+</div>
+
+<div class="tip" id="tip" hidden></div>
+
+<script>
+const CLASSES = [
+  { key: 'top', label: 'BAKUDAPA', desc: 'Prioritas 1' },
+  { key: 'office', label: 'Office & Chat', desc: 'Prioritas 2' },
+  { key: 'normal', label: 'Browsing', desc: 'Prioritas 3' },
+  { key: 'bulk', label: 'Streaming & Download', desc: 'Prioritas 4' },
+  { key: 'other', label: 'Lokal / lainnya', desc: 'Tidak lewat QoS' },
+];
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const nf1 = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 1 });
+const nf0 = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 });
+
+function bps(v) {
+  if (!v || v < 1) return '0 bps';
+  if (v < 1e3) return nf0.format(v) + ' bps';
+  if (v < 1e6) return nf0.format(v / 1e3) + ' kbps';
+  return nf1.format(v / 1e6) + ' Mbps';
+}
+function bpsParts(v) {
+  if (!v || v < 1e3) return [nf0.format(v || 0), 'bps'];
+  if (v < 1e6) return [nf0.format(v / 1e3), 'kbps'];
+  return [nf1.format(v / 1e6), 'Mbps'];
+}
+function bytes(v) {
+  if (!v) return '0 B';
+  const u = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let i = 0;
+  while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; }
+  return (i < 2 ? nf0 : nf1).format(v) + ' ' + u[i];
+}
+const timeFmt = (t) => new Date(t).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+const ipNum = (ip) => ip.split('.').reduce((a, b) => a * 256 + Number(b), 0);
+const clientName = (c) => c.comment || c.host || '(tanpa nama)';
+
+let state = null;
+
+// ---------- Tema terang / gelap ----------
+function applyTheme(t) {
+  if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+  else delete document.documentElement.dataset.theme;
+  try { if (t === 'light' || t === 'dark') localStorage.setItem('mt-theme', t); else localStorage.removeItem('mt-theme'); } catch (e) {}
+  document.querySelectorAll('#themeSeg button').forEach((b) => {
+    const on = b.dataset.themeSet === (t || 'auto');
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on);
+  });
+}
+$('#themeSeg').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-theme-set]');
+  if (b) applyTheme(b.dataset.themeSet);
+});
+applyTheme(document.documentElement.dataset.theme || 'auto');
+
+// ---------- Gauge ----------
+const LVL_RANK = { unk: -1, good: 0, warn: 1, bad: 2 };
+const levelOf = (ratio, warn, bad) => (ratio == null ? 'unk' : ratio >= bad ? 'bad' : ratio >= warn ? 'warn' : 'good');
+const LVL_VAR = { good: 'var(--good)', warn: 'var(--warning)', bad: 'var(--critical)', unk: 'var(--unknown)' };
+function gaugeSvg(ratio, lvl, value, unit, warn, bad) {
+  const cx = 60, cy = 58, r = 44, A0 = 135, SW = 270;
+  const pt = (a, rr = r) => [cx + rr * Math.cos((a * Math.PI) / 180), cy + rr * Math.sin((a * Math.PI) / 180)];
+  const arc = (from, to) => {
+    const [x1, y1] = pt(from), [x2, y2] = pt(to);
+    return `M${x1.toFixed(2)},${y1.toFixed(2)}A${r},${r} 0 ${to - from > 180 ? 1 : 0} 1 ${x2.toFixed(2)},${y2.toFixed(2)}`;
+  };
+  const tick = (f, color) => {
+    const a = A0 + SW * f, [x1, y1] = pt(a, r + 8), [x2, y2] = pt(a, r + 3);
+    return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${color}" stroke-width="2" stroke-linecap="round"/>`;
+  };
+  const f = ratio == null ? 0 : Math.max(0, Math.min(0.9999, ratio));
+  return `<svg viewBox="0 0 120 104" role="img" aria-label="${esc(value + ' ' + unit)}">
+    <path d="${arc(A0, A0 + SW)}" fill="none" stroke="var(--track)" stroke-width="10" stroke-linecap="round"/>
+    ${f > 0.004 ? `<path d="${arc(A0, A0 + SW * f)}" fill="none" stroke="${LVL_VAR[lvl]}" stroke-width="10" stroke-linecap="round"/>` : ''}
+    ${tick(warn, 'var(--warning)')}${tick(bad, 'var(--critical)')}
+    <text class="gv" x="60" y="62" text-anchor="middle">${esc(value)}</text>
+    <text class="gu" x="60" y="78" text-anchor="middle">${esc(unit)}</text>
+  </svg>`;
+}
+function gaugeCell(o) {
+  const lvl = o.lvl || levelOf(o.ratio, o.warn, o.bad);
+  return `<div class="gauge">${gaugeSvg(o.ratio, lvl, o.value, o.unit, o.warn, o.bad)}
+    <div class="g-label">${esc(o.label)}</div>
+    <div class="g-sub"><span class="dot ${lvl === 'unk' ? '' : lvl}"></span>${o.sub}</div></div>`;
+}
+function renderGauges(s) {
+  const r = s.router || {};
+  const ok = s.ok && s.wan;
+  const cells = [];
+  const bw = (dir, label) => {
+    const v = ok ? s.wan[dir] : null;
+    const lim = s.limits && s.limits[dir];
+    const ratio = v != null && lim ? v / lim : null;
+    const [n, u] = bpsParts(v || 0);
+    const lvl = levelOf(ratio, 0.7, 0.9);
+    return gaugeCell({
+      label, ratio, warn: 0.7, bad: 0.9, value: ok ? n : '–', unit: u, lvl,
+      sub: ratio == null ? 'batas belum terbaca' : `${nf0.format(ratio * 100)}% dari ${bps(lim)}`,
+    });
+  };
+  cells.push(bw('down', 'Download internet'));
+  cells.push(bw('up', 'Upload internet'));
+  const cpu = ok && r.cpu != null ? r.cpu / 100 : null;
+  const cpuLvl = levelOf(cpu, 0.7, 0.85);
+  cells.push(gaugeCell({ label: 'CPU router', ratio: cpu, warn: 0.7, bad: 0.85, value: cpu == null ? '–' : nf0.format(r.cpu), unit: '%', lvl: cpuLvl, sub: { unk: 'belum terbaca', good: 'Normal', warn: 'Tinggi', bad: 'Kritis' }[cpuLvl] }));
+  const mem = ok && r.memTotal ? r.memUsed / r.memTotal : null;
+  const memLvl = levelOf(mem, 0.8, 0.9);
+  cells.push(gaugeCell({ label: 'RAM router', ratio: mem, warn: 0.8, bad: 0.9, value: mem == null ? '–' : nf0.format(mem * 100), unit: '%', lvl: memLvl, sub: mem == null ? 'belum terbaca' : `${bytes(r.memUsed)} / ${bytes(r.memTotal)}` }));
+  const pool = s.health && s.health.pool;
+  const pr = pool && pool.size ? (pool.used || 0) / pool.size : null;
+  const pLvl = levelOf(pr, 0.75, 0.9);
+  cells.push(gaugeCell({ label: 'IP DHCP WiFi', ratio: pr, warn: 0.75, bad: 0.9, value: pr == null ? '–' : nf0.format(pool.used || 0), unit: pr == null ? '' : `dari ${nf0.format(pool.size)} IP`, lvl: pLvl, sub: pr == null ? 'belum terbaca' : `${{ good: 'Aman', warn: 'Mulai penuh', bad: 'Hampir habis' }[pLvl]} · lease ${esc(pool.leaseTime || '–')}` }));
+  const online = (s.clients || []).filter((c) => c.online).length;
+  cells.push(`<div class="gauge bignum"><div class="v">${ok ? nf0.format(online) : '–'}<small> online</small></div>
+    <div class="g-label" style="margin-top:10px">Perangkat WiFi</div>
+    <div class="g-sub">dari ${nf0.format((s.clients || []).length)} perangkat tercatat</div></div>`);
+  $('#gauges').innerHTML = cells.join('');
+}
+
+// ---------- Peta jaringan (topologi) ----------
+const ICON = {
+  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z"/></svg>',
+  modem: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 16.5h.01M10.5 16.5h.01M14 16.5h3M8 13l-2-6M16 13l2-6"/></svg>',
+  router: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="19" height="9" rx="2"/><path d="M6 12.5h.01M9 12.5h.01M12 12.5h.01M15.5 12.5h3M7 20v-3M17 20v-3M12 8V4M9.5 5.5 12 3l2.5 2.5"/></svg>',
+  wifi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.2" r="1.2" fill="currentColor"/></svg>',
+  devices: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="10" rx="1.5"/><path d="M1 18h16"/><rect x="17.5" y="9" width="5" height="10" rx="1.2"/><path d="M20 16.5h.01"/></svg>',
+};
+const BADGE = { good: '✓', warn: '!', bad: '✕', unk: '?' };
+const STATE_TEXT = { good: 'Normal', warn: 'Perhatian', bad: 'Bermasalah', unk: 'Tidak diketahui' };
+function topoNode(icon, title, lvl, metric, sub, extra) {
+  return `<div class="node ${lvl}"><div class="n-ic">${ICON[icon]}<span class="badge ${lvl}" aria-hidden="true">${BADGE[lvl]}</span></div>
+    <div class="n-t">${title}</div><div class="n-m">${metric}</div><div class="n-s">${sub}</div>${extra ? `<div class="n-s">${extra}</div>` : ''}
+    <div class="n-st"><span class="dot ${lvl === 'unk' ? '' : lvl}"></span>${STATE_TEXT[lvl]}</div></div>`;
+}
+function topoLink(lvl, label, sub) {
+  return `<div class="link ${lvl}" title="${esc(label)}"><span class="l-lbl">${label}</span><i></i><span class="l-sub">${sub || '&nbsp;'}</span></div>`;
+}
+function renderTopology(s) {
+  const h = s.health || {};
+  const fresh = h.time && h.fresh !== false;
+  const pings = (fresh && h.pings) || [];
+  const find = (role) => pings.find((p) => p.role === role);
+  const inet = find('inet'), gw = find('gw');
+  const sites = pings.filter((p) => p.role === 'site');
+  const msv = (p) => (p && p.rtt != null ? `${nf0.format(p.rtt)}<small>ms</small>` : p ? 'Timeout' : '–');
+  const ok = !!(s.ok && s.wan);
+  const r = s.router || {};
+  const tn = s.tunnel || {};
+
+  const inetLvl = !ok ? 'unk' : inet ? pingLevel('inet', inet.rtt, inet.loss) : 'unk';
+  const gwLvl = !ok ? 'unk' : gw ? pingLevel('gw', gw.rtt, gw.loss) : 'unk';
+  const cpuLvl = ok ? levelOf((r.cpu || 0) / 100, 0.7, 0.85) : 'bad';
+  const wanLvl = !ok ? 'unk' : s.wan.running === false ? 'bad' : 'good';
+  const lanLvl = !ok ? 'unk' : s.lan && s.lan.running === false ? 'bad' : 'good';
+  const pool = h.pool;
+  const pr = pool && pool.size ? (pool.used || 0) / pool.size : null;
+  const poolLvl = ok ? levelOf(pr, 0.75, 0.9) : 'unk';
+  const online = (s.clients || []).filter((c) => c.online).length;
+
+  const siteText = sites.map((p) => `${esc(p.label)} ${p.rtt != null ? nf0.format(p.rtt) + ' ms' : 'timeout'}`).join(' · ');
+  const routerSub = ok ? `CPU ${nf0.format(r.cpu)}% · up ${esc(shortUptime(r.uptime))}` : (tn.enabled ? `tunnel ${tn.state === 'connecting' ? 'membuka…' : 'terputus'}` : 'tidak terjangkau');
+  $('#topo').innerHTML = [
+    topoNode('globe', 'Internet', inetLvl, msv(inet), inet ? `${esc(inet.address)} · loss ${nf0.format(inet.loss || 0)}%` : 'ping belum terbaca', siteText),
+    topoLink(inetLvl, 'IndiHome', 'ISP'),
+    topoNode('modem', 'Modem', gwLvl, msv(gw), gw ? esc(gw.address) : '–'),
+    topoLink(wanLvl, esc(s.wanIf || 'ether1'), ok ? `↓ ${bps(s.wan.down)}<br>↑ ${bps(s.wan.up)}` : ''),
+    topoNode('router', 'MikroTik', ok ? cpuLvl : 'bad', ok ? `${nf0.format(r.cpu)}<small>% CPU</small>` : 'Putus', ok ? esc(r.board || r.name || '') : routerSub),
+    topoLink(lanLvl, esc(s.lanIf || 'ether4'), ok && s.lan ? `↓ ${bps(s.lan.down)}<br>↑ ${bps(s.lan.up)}` : ''),
+    topoNode('wifi', 'Access point', lanLvl, ok ? (s.lan && s.lan.running === false ? 'Mati' : 'Aktif') : '–', ok && s.lan && s.lan.linkDowns != null ? `putus ${nf0.format(s.lan.linkDowns)}× sejak boot` : '–'),
+    topoLink(poolLvl, 'DHCP', pr != null ? `${nf0.format(pool.used || 0)}/${nf0.format(pool.size)} IP` : ''),
+    topoNode('devices', 'Perangkat', poolLvl === 'unk' && !ok ? 'unk' : poolLvl, ok ? `${nf0.format(online)}<small>online</small>` : '–', `${nf0.format((s.clients || []).length)} tercatat`),
+  ].join('');
+  $('#topoFoot').innerHTML = [
+    ok && `<span>Router: ${esc(r.name)} · RouterOS ${esc(r.version)}</span>`,
+    ok && `<span>Uptime router: ${esc(r.uptime)}</span>`,
+    ok && s.wan.linkDowns != null && `<span>${esc(s.wanIf || 'ether1')} putus ${nf0.format(s.wan.linkDowns)}× sejak boot</span>`,
+    h.time && `<span>Ping diukur ${timeFmt(h.time)}</span>`,
+  ].filter(Boolean).join('');
+}
+function shortUptime(u) {
+  // "2w3d04:05:06" -> "2w3d", "04:05:06" -> "4j"
+  if (!u) return '–';
+  const m = String(u).match(/^((?:\d+[wd])*)(\d+):(\d+):\d+$/);
+  if (!m) return u;
+  return m[1] ? m[1] : Number(m[2]) ? `${Number(m[2])} jam` : `${Number(m[3])} mnt`;
+}
+
+// ---------- Line chart trafik live ----------
+const chart = { pts: [], x: null, y: null, m: null };
+function niceStep(max) {
+  const raw = max / 4;
+  const p = Math.pow(10, Math.floor(Math.log10(raw)));
+  for (const k of [1, 2, 2.5, 5, 10]) if (k * p >= raw) return k * p;
+  return 10 * p;
+}
+function renderChart(s) {
+  const el = $('#chart');
+  const pts = s.history;
+  if (pts.length < 2) { el.innerHTML = '<p class="empty">Mengumpulkan data…</p>'; chart.pts = []; return; }
+  const W = el.clientWidth, H = el.clientHeight;
+  const m = { l: 48, r: 78, t: 10, b: 22 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const limit = s.limits.down || 0;
+  const peak = Math.max(limit, ...pts.map((p) => Math.max(p.down, p.up)), 1e6);
+  const step = niceStep(peak);
+  const top = Math.ceil(peak / step) * step;
+  const t0 = pts[0].t, t1 = pts[pts.length - 1].t;
+  const x = (t) => m.l + ((t - t0) / Math.max(1, t1 - t0)) * iw;
+  const y = (v) => m.t + ih - (v / top) * ih;
+  const line = (key) => pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.t).toFixed(1)},${y(p[key]).toFixed(1)}`).join('');
+  const base = y(0);
+
+  let g = '';
+  for (let v = 0; v <= top + 1; v += step) {
+    g += `<line x1="${m.l}" x2="${m.l + iw}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? 'var(--axis)' : 'var(--grid)'}" stroke-width="1"/>`;
+    g += `<text x="${m.l - 8}" y="${y(v) + 4}" text-anchor="end">${nf1.format(v / 1e6)} M</text>`;
+  }
+  const ticks = [t0, t0 + (t1 - t0) / 2, t1];
+  ticks.forEach((t, i) => {
+    g += `<text x="${x(t)}" y="${H - 4}" text-anchor="${['start', 'middle', 'end'][i]}">${timeFmt(t)}</text>`;
+  });
+  if (limit) {
+    g += `<line x1="${m.l}" x2="${m.l + iw}" y1="${y(limit)}" y2="${y(limit)}" stroke="var(--critical)" stroke-width="1" stroke-dasharray="2 3"/>`;
+    g += `<text x="${m.l + 4}" y="${y(limit) - 5}">Batas download ${bps(limit)}</text>`;
+  }
+  const area = `${line('down')}L${x(t1)},${base}L${x(t0)},${base}Z`;
+  const last = pts[pts.length - 1];
+  let yd = y(last.down), yu = y(last.up);
+  if (Math.abs(yd - yu) < 13) { if (yd <= yu) { yd -= 7; yu += 7; } else { yd += 7; yu -= 7; } }
+
+  el.innerHTML = `<svg role="img" aria-label="Grafik trafik internet download dan upload">
+    <defs><linearGradient id="gDown" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--s1)" stop-opacity=".28"/><stop offset="1" stop-color="var(--s1)" stop-opacity=".02"/></linearGradient></defs>
+    ${g}
+    <path d="${area}" fill="url(#gDown)"/>
+    <path d="${line('up')}" fill="none" stroke="var(--s2)" stroke-width="2" stroke-dasharray="4 3" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="${line('down')}" fill="none" stroke="var(--s1)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    <text class="end-label" x="${m.l + iw + 8}" y="${yd + 4}">↓ ${bps(last.down)}</text>
+    <text class="end-label" x="${m.l + iw + 8}" y="${yu + 4}">↑ ${bps(last.up)}</text>
+    <g id="hover" style="display:none">
+      <line id="hLine" y1="${m.t}" y2="${m.t + ih}" stroke="var(--axis)" stroke-width="1"/>
+      <circle id="hDown" r="4" fill="var(--s1)" stroke="var(--surface)" stroke-width="2"/>
+      <circle id="hUp" r="4" fill="var(--s2)" stroke="var(--surface)" stroke-width="2"/>
+    </g>
+    <rect x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" id="hit"/>
+  </svg>`;
+  Object.assign(chart, { pts, x, y, m, iw });
+  const hit = el.querySelector('#hit');
+  hit.addEventListener('mousemove', onChartMove);
+  hit.addEventListener('mouseleave', hideTip);
+}
+function onChartMove(e) {
+  const { pts, x, y } = chart;
+  if (!pts.length) return;
+  const rect = $('#chart').getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  let best = 0;
+  pts.forEach((p, i) => { if (Math.abs(x(p.t) - mx) < Math.abs(x(pts[best].t) - mx)) best = i; });
+  const p = pts[best];
+  const hover = $('#hover');
+  hover.style.display = '';
+  $('#hLine').setAttribute('x1', x(p.t)); $('#hLine').setAttribute('x2', x(p.t));
+  $('#hDown').setAttribute('cx', x(p.t)); $('#hDown').setAttribute('cy', y(p.down));
+  $('#hUp').setAttribute('cx', x(p.t)); $('#hUp').setAttribute('cy', y(p.up));
+  showTip(`<div class="t">${timeFmt(p.t)}</div>
+    <div class="row"><span>Download</span><b>${bps(p.down)}</b></div>
+    <div class="row"><span>Upload</span><b>${bps(p.up)}</b></div>`, e.clientX, e.clientY);
+}
+function showTip(html, cx, cy) {
+  const tip = $('#tip');
+  tip.innerHTML = html;
+  tip.hidden = false;
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let left = cx + 14, topPos = cy - h - 10;
+  if (left + w > window.innerWidth - 8) left = cx - w - 14;
+  if (topPos < 64) topPos = cy + 14;
+  tip.style.left = left + window.scrollX + 'px';
+  tip.style.top = topPos + window.scrollY + 'px';
+}
+function hideTip() {
+  $('#tip').hidden = true;
+  const hover = document.getElementById('hover');
+  if (hover) hover.style.display = 'none';
+}
+
+// ---------- QoS ----------
+function renderQos(s) {
+  const lim = s.limits.down || Math.max(1, ...Object.values(s.qos).map((q) => q.down));
+  if (!s.limits.down && !Object.values(s.qos).some((q) => q.down || q.up)) {
+    $('#qos').innerHTML = '<p class="empty">Queue QOS-26 belum terbaca dari router.</p>';
+    return;
+  }
+  const activeByClass = {};
+  for (const c of s.clients) for (const k of Object.keys(c.classes)) if (c.classes[k].down + c.classes[k].up > 0) activeByClass[k] = (activeByClass[k] || 0) + 1;
+  $('#qos').innerHTML = CLASSES.filter((c) => c.key !== 'other').map((c) => {
+    const q = s.qos[c.key] || { down: 0, up: 0, dropped: 0, devices: 0 };
+    const devices = q.devices || activeByClass[c.key] || 0;
+    const pct = Math.min(100, (q.down / lim) * 100);
+    return `<div class="qos-row" data-tip="${esc(c.label)}|${bps(q.down)}|${bps(q.up)}|${devices}|${q.dropped}">
+      <div class="qos-name"><span class="sw" style="background:var(--c-${c.key})"></span><div>${c.label}<small>${c.desc}</small></div></div>
+      <div class="bar-track"><i style="width:${pct.toFixed(1)}%;background:var(--c-${c.key})"></i></div>
+      <div class="qos-vals">↓ ${bps(q.down)} · ↑ ${bps(q.up)} · ${nf0.format(devices)} perangkat${q.dropped ? ` · ${nf0.format(q.dropped)} paket ditahan` : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ---------- Blokir ----------
+function renderBlocked(s) {
+  const b = s.blocked;
+  if (!b.installed) {
+    $('#blocked').innerHTML = '<p class="empty">Script BLOK-26 belum terpasang di router.</p>';
+    return;
+  }
+  const catLabel = { judi: 'Judi', game: 'Game', bypass: 'Bypass DNS' };
+  $('#blocked').innerHTML = `
+    <div class="blk-stats">
+      <div class="blk-stat"><div class="n">${nf0.format(b.judi)}</div><div class="l">Judi (firewall)</div></div>
+      <div class="blk-stat"><div class="n">${nf0.format(b.game)}</div><div class="l">Game (firewall)</div></div>
+      <div class="blk-stat"><div class="n">${nf0.format(b.dnsBlocklist)}</div><div class="l">Domain judi ditolak DNS</div></div>
+      <div class="blk-stat"><div class="n">${nf0.format(b.bypass)}</div><div class="l">Upaya bypass DNS</div></div>
+    </div>
+    ${b.rules.length ? `<ul class="blk-list">${b.rules.map((r) => `<li><span><span class="tag">${catLabel[r.cat]}</span>${esc(r.name.replace(/^(judi|game)\s+/, ''))}</span><b>${nf0.format(r.packets)}</b></li>`).join('')}</ul>` : '<p class="hint">Belum ada akses yang diblokir.</p>'}`;
+}
+
+// ---------- Tabel client ----------
+function renderClients(s) {
+  const q = $('#q').value.trim().toLowerCase();
+  const onlyOnline = $('#onlyOnline').checked;
+  const sort = $('#sort').value;
+  let list = s.clients.filter((c) => (!onlyOnline || c.online)
+    && (!q || [clientName(c), c.host, c.ip, c.mac].some((v) => String(v).toLowerCase().includes(q))));
+  const cmp = {
+    down: (a, b) => b.down - a.down,
+    up: (a, b) => b.up - a.up,
+    sess: (a, b) => (b.sessDown + b.sessUp) - (a.sessDown + a.sessUp),
+    name: (a, b) => clientName(a).localeCompare(clientName(b)),
+    ip: (a, b) => ipNum(a.ip) - ipNum(b.ip),
+  }[sort];
+  list.sort(cmp);
+  const maxTotal = Math.max(1, ...list.map((c) => c.down + c.up));
+  $('#clientHint').textContent = `${list.length} ditampilkan · diperbarui tiap ${nf0.format(s.pollMs / 1000)} detik`;
+
+  if (!list.length) {
+    $('#rows').innerHTML = `<tr><td colspan="8"><p class="empty">${s.clients.length ? 'Tidak ada client yang cocok.' : 'Belum ada client terbaca.'}</p></td></tr>`;
+    return;
+  }
+  $('#rows').innerHTML = list.map((c) => {
+    const total = c.down + c.up;
+    const width = Math.max(total > 0 ? 6 : 0, (total / maxTotal) * 160);
+    const segs = CLASSES.map((k) => ({ ...k, v: c.classes[k.key].down + c.classes[k.key].up })).filter((k) => k.v > 0);
+    const dominant = segs.slice().sort((a, b) => b.v - a.v)[0];
+    const stack = segs.map((k) => `<i style="flex:${k.v};background:var(--c-${k.key})" data-tip-seg="${esc(k.label)}|${bps(k.v)}"></i>`).join('');
+    return `<tr class="${c.online ? '' : 'off'}">
+      <td class="host"><b title="${esc(clientName(c))}">${esc(clientName(c))}</b><small>${esc(c.mac || '–')}</small></td>
+      <td class="ip">${esc(c.ip)}</td>
+      <td><span class="st"><span class="dot ${c.online ? 'good' : ''}"></span>${c.online ? 'Online' : 'Offline'}</span></td>
+      <td class="num">${bps(c.down)}</td>
+      <td class="num">${bps(c.up)}</td>
+      <td>${segs.length ? `<div class="mix"><div class="stack" style="width:${width.toFixed(0)}px">${stack}</div><small>${esc(dominant.label)}</small></div>` : '<span class="hint">Tidak ada trafik</span>'}</td>
+      <td class="num">${nf0.format(c.conns)}</td>
+      <td class="num">↓ ${bytes(c.sessDown)} · ↑ ${bytes(c.sessUp)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderLegend() {
+  $('#classLegend').innerHTML = CLASSES.map((c) => `<span><span class="sw" style="background:var(--c-${c.key})"></span>${c.label}</span>`).join('');
+}
+
+// ---------- Status, banner, info sistem ----------
+function renderStatus(s) {
+  const fresh = Date.now() - s.time < Math.max(15000, s.pollMs * 4);
+  const tn = s.tunnel || {};
+  const tunnelDown = tn.enabled && tn.state !== 'up';
+  const dot = $('#statusDot');
+  dot.className = 'dot ' + (!s.ok || !fresh ? 'bad' : s.demo ? 'warn' : s.errors.length ? 'warn' : 'good');
+  $('#statusText').textContent = !s.ok
+    ? (tunnelDown ? 'Menyambung ulang…' : 'Tidak terhubung')
+    : s.demo ? 'Mode demo' : s.errors.length ? 'Sebagian data gagal' : 'Terhubung';
+  $('#updated').textContent = timeFmt(s.time);
+  $('#subnet').textContent = (s.lanPrefix || '172.19.26.') + 'x';
+  const r = s.router || {};
+  $('#routerName').textContent = r.name ? `${r.name} · ${r.board || ''} · RouterOS ${r.version}` : 'Router belum terbaca';
+
+  const banner = $('#banner');
+  if (s.errors.length) {
+    banner.hidden = false;
+    let why = '';
+    if (!s.ok && tunnelDown) {
+      why = `Tunnel SSH ke router sedang ${tn.state === 'connecting' ? 'dibuka' : 'terputus'} dan akan menyambung ulang otomatis
+        (sudah ${nf0.format(tn.restarts)} kali sejak server menyala). Biasanya karena internet di Ternate putus atau listrik/modem mati.
+        ${tn.lastError ? `<br>Pesan SSH terakhir: <code>${esc(tn.lastError)}</code>` : ''}<br>`;
+    } else if (!s.ok) {
+      why = 'Cek apakah router bisa dijangkau dan password user webmon di file .env sudah benar.<br>';
+    }
+    banner.innerHTML = `<b>${s.ok ? 'Sebagian data router gagal dibaca' : 'Tidak bisa terhubung ke router'}</b>${why}
+      <code>${s.errors.map(esc).join('<br>')}</code>`;
+  } else {
+    banner.hidden = true;
+  }
+  const tunnelText = !tn.enabled ? '' : tn.state === 'up'
+    ? `Tunnel: tersambung sejak ${timeFmt(tn.since)}${tn.restarts ? ` · sudah sambung ulang ${nf0.format(tn.restarts)}×` : ''}`
+    : `Tunnel: ${tn.state === 'connecting' ? 'membuka' : 'terputus'} sejak ${timeFmt(tn.since)}`;
+  $('#sys').innerHTML = [
+    r.name && `Board: ${esc(r.board)}`,
+    r.name && `RAM: ${bytes(r.memUsed)} / ${bytes(r.memTotal)}`,
+    r.name && `Uptime router: ${esc(r.uptime)}`,
+    tunnelText,
+    `Diperbarui ${timeFmt(s.time)}`,
+  ].filter(Boolean).map((t) => `<span>${t}</span>`).join('');
+}
+
+// ---------- Ambang ping ----------
+const ms = (v) => (v == null ? '–' : nf0.format(v) + ' ms');
+// Ambang "lambat": modem harus < 10 ms; internet/situs < 80 ms bagus, > 150 ms terasa lambat
+function pingLevel(role, rtt, loss) {
+  if (rtt == null) return 'bad';
+  const [warnMs, badMs] = role === 'gw' ? [10, 50] : [80, 150];
+  if (loss >= 5 || rtt > badMs) return 'bad';
+  if (loss >= 1 || rtt > warnMs) return 'warn';
+  return 'good';
+}
+const FINDING_TEXT = { good: 'Baik', warn: 'Perhatian', bad: 'Masalah', info: 'Info' };
+
+// ---------- Riwayat & analisa ----------
+let hist = null;
+let histHours = 24;
+const pctFmt = (r) => nf0.format(r * 100) + '%';
+function durFmt(min) {
+  if (min < 60) return `${nf0.format(min)} menit`;
+  const h = Math.floor(min / 60), m = min % 60;
+  return `${nf0.format(h)} jam${m ? ` ${m} menit` : ''}`;
+}
+const dateTimeFmt = (t) => new Date(t).toLocaleString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+const hourOf = (t) => new Date(t).getHours();
+
+// Generic line chart dengan celah data, area putus, garis referensi, dan crosshair
+function lineChart(el, opt) {
+  const { pts, from, to, bucketMs, series, fmt, axisFmt, ref, minTop = 1 } = opt;
+  const dataPts = pts.filter((p) => series.some((s) => s.get(p) != null));
+  if (!dataPts.length) { el.innerHTML = '<p class="empty">Belum ada data pada rentang ini.</p>'; el._c = null; return; }
+  const W = el.clientWidth, H = el.clientHeight;
+  const m = { l: 46, r: 10, t: 10, b: 22 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const drawn = series.filter((s) => !s.tipOnly);
+  const peak = Math.max(minTop, ref || 0, ...dataPts.flatMap((p) => drawn.map((s) => s.get(p) || 0)));
+  const step = niceStep(peak);
+  const top = Math.ceil(peak / step) * step;
+  const x = (t) => m.l + ((t - from) / Math.max(1, to - from)) * iw;
+  const y = (v) => m.t + ih - (v / top) * ih;
+  let g = '';
+  for (let v = 0; v <= top + step / 1000; v += step) {
+    g += `<line x1="${m.l}" x2="${m.l + iw}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? 'var(--axis)' : 'var(--grid)'}" stroke-width="1"/>`;
+    g += `<text x="${m.l - 8}" y="${y(v) + 4}" text-anchor="end">${axisFmt(v)}</text>`;
+  }
+  const long = to - from > 26 * 3600e3;
+  for (let i = 0; i <= 3; i++) {
+    const t = from + ((to - from) * i) / 3;
+    const label = long
+      ? new Date(t).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' })
+      : new Date(t).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    g += `<text x="${x(t)}" y="${H - 4}" text-anchor="${['start', 'middle', 'middle', 'end'][i]}">${label}</text>`;
+  }
+  // area merah tipis: menit saat PC menyala tapi router tak terjangkau
+  const bw = Math.max(1, (bucketMs / Math.max(1, to - from)) * iw);
+  for (const p of pts) if (p.off && p.off >= p.rec / 2) g += `<rect x="${x(p.t)}" y="${m.t}" width="${bw}" height="${ih}" fill="var(--critical)" opacity="0.18"/>`;
+  if (ref) g += `<line x1="${m.l}" x2="${m.l + iw}" y1="${y(ref)}" y2="${y(ref)}" stroke="var(--critical)" stroke-width="1" stroke-dasharray="2 3"/>`;
+  const gid = 'g' + el.id;
+  const paths = drawn.map((s) => {
+    // segmen terpisah saat data kosong, supaya celah tidak disambung garis
+    const segs = [];
+    let cur = null, lastT = null;
+    for (const p of pts) {
+      const v = s.get(p);
+      if (v == null) { lastT = null; continue; }
+      if (lastT == null || p.t - lastT > bucketMs * 1.5) segs.push(cur = []);
+      cur.push([x(p.t + bucketMs / 2), y(v)]);
+      lastT = p.t;
+    }
+    const d = segs.map((sg) => sg.map(([px, py], i) => `${i ? 'L' : 'M'}${px.toFixed(1)},${py.toFixed(1)}`).join('')).join('');
+    const area = s.area ? segs.filter((sg) => sg.length > 1).map((sg) => sg.map(([px, py], i) => `${i ? 'L' : 'M'}${px.toFixed(1)},${py.toFixed(1)}`).join('') + `L${sg[sg.length - 1][0].toFixed(1)},${y(0)}L${sg[0][0].toFixed(1)},${y(0)}Z`).join('') : '';
+    return (area ? `<path d="${area}" fill="url(#${gid})"/>` : '')
+      + `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.dash ? 2 : 2.5}" ${s.dash ? 'stroke-dasharray="4 3"' : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
+  }).join('');
+  const areaColor = (drawn.find((s) => s.area) || {}).color || 'var(--s1)';
+  el.innerHTML = `<svg role="img" aria-label="${esc(opt.label)}">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${areaColor}" stop-opacity=".26"/><stop offset="1" stop-color="${areaColor}" stop-opacity=".02"/></linearGradient></defs>
+    ${g}${paths}
+    <g class="hv" style="display:none"><line class="hl" y1="${m.t}" y2="${m.t + ih}" stroke="var(--axis)" stroke-width="1"/>
+    ${series.map((s, i) => (s.tipOnly ? '' : `<circle class="hc${i}" r="4" fill="${s.color}" stroke="var(--surface)" stroke-width="2"/>`)).join('')}</g>
+    <rect x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" class="hit"/></svg>`;
+  el._c = { pts: dataPts, x, y, series, fmt, bucketMs };
+  const hit = el.querySelector('.hit');
+  hit.addEventListener('mousemove', (e) => {
+    const c = el._c;
+    const mx = e.clientX - el.getBoundingClientRect().left;
+    let best = c.pts[0];
+    for (const p of c.pts) if (Math.abs(c.x(p.t + c.bucketMs / 2) - mx) < Math.abs(c.x(best.t + c.bucketMs / 2) - mx)) best = p;
+    const cx = c.x(best.t + c.bucketMs / 2);
+    const hv = el.querySelector('.hv');
+    hv.style.display = '';
+    hv.querySelector('.hl').setAttribute('x1', cx);
+    hv.querySelector('.hl').setAttribute('x2', cx);
+    c.series.forEach((s, i) => {
+      const v = s.get(best);
+      const circ = hv.querySelector('.hc' + i);
+      if (!circ) return;
+      circ.style.display = v == null ? 'none' : '';
+      if (v != null) { circ.setAttribute('cx', cx); circ.setAttribute('cy', c.y(v)); }
+    });
+    const end = new Date(best.t + c.bucketMs).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    showTip(`<div class="t">${dateTimeFmt(best.t)}${c.bucketMs > 60000 ? '–' + end : ''}</div>
+      ${c.series.map((s) => `<div class="row"><span>${s.label}</span><b>${s.get(best) == null ? '–' : c.fmt(s.get(best))}</b></div>`).join('')}
+      ${best.off ? `<div class="row"><span>Router tak terjangkau</span><b>${best.off} menit</b></div>` : ''}`, e.clientX, e.clientY);
+  });
+  hit.addEventListener('mouseleave', () => { $('#tip').hidden = true; el.querySelector('.hv').style.display = 'none'; });
+}
+
+function renderHistoryCharts(h) {
+  const base = { pts: h.points, from: h.from, to: h.to, bucketMs: h.bucketMin * 60000 };
+  const lim = Math.max(0, ...h.points.map((p) => p.lim || 0));
+  lineChart($('#hBw'), {
+    ...base, label: 'Grafik riwayat download internet', ref: lim, minTop: 1e6,
+    series: [
+      { label: 'Rata-rata', get: (p) => p.down, color: 'var(--s1)', area: true },
+      { label: 'Puncak', get: (p) => p.downMax, color: 'var(--ink-2)', dash: true },
+    ],
+    fmt: bps, axisFmt: (v) => nf0.format(v / 1e6) + ' M',
+  });
+  // Maks 2 garis supaya terbaca: internet (solid) + modem (putus-putus); situs lain lewat tooltip
+  const targets = h.pingTargets || [];
+  const inet = targets.find((t) => t.role === 'inet');
+  const gw = targets.find((t) => t.role === 'gw');
+  const sites = targets.filter((t) => t.role === 'site');
+  const pingSeries = [];
+  if (inet) pingSeries.push({ label: `Internet (${inet.address})`, get: (p) => p.ping && p.ping.inet ? p.ping.inet.rtt : null, color: 'var(--s-main)', area: true });
+  if (gw) pingSeries.push({ label: 'Modem IndiHome', get: (p) => p.ping && p.ping.gw ? p.ping.gw.rtt : null, color: 'var(--ink-2)', dash: true });
+  const pingLegend = pingSeries.map((s) => `<span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="${s.color}" stroke-width="2.5" ${s.dash ? 'stroke-dasharray="4 3"' : ''} stroke-linecap="round"/></svg>${esc(s.label)}</span>`);
+  for (const sTarget of sites) pingSeries.push({ label: sTarget.label, get: (p) => p.ping && p.ping[sTarget.key] ? p.ping[sTarget.key].rtt : null, color: 'var(--ink-2)', tipOnly: true });
+  $('#pingLegend').innerHTML = pingLegend.join('') + (sites.length ? `<span>${esc(sites.map((x) => x.label).join(', '))}: lihat tooltip</span>` : '');
+  lineChart($('#hPing'), {
+    ...base, label: 'Grafik riwayat ping', minTop: 50,
+    series: pingSeries,
+    fmt: (v) => nf0.format(v) + ' ms', axisFmt: (v) => nf0.format(v) + ' ms',
+  });
+  const poolSize = Math.max(0, ...h.points.map((p) => p.poolSize || 0));
+  lineChart($('#hDev'), {
+    ...base, label: 'Grafik perangkat online dan IP DHCP terpakai', ref: poolSize, minTop: 10,
+    series: [
+      { label: 'Perangkat online', get: (p) => p.online, color: 'var(--s-main)', area: true },
+      { label: 'IP DHCP terpakai', get: (p) => p.poolUsed, color: 'var(--ink-2)', dash: true },
+    ],
+    fmt: (v) => nf0.format(v), axisFmt: (v) => nf0.format(v),
+  });
+}
+
+function stats(vals) {
+  const v = vals.filter((x) => x != null).sort((a, b) => a - b);
+  if (!v.length) return null;
+  return { n: v.length, avg: v.reduce((a, b) => a + b, 0) / v.length, p95: v[Math.min(v.length - 1, Math.floor(v.length * 0.95))], max: v[v.length - 1] };
+}
+// Jam yang paling sering bermasalah -> "09.00–11.00, 14.00"
+function busiestHours(list) {
+  const count = new Array(24).fill(0);
+  for (const p of list) count[hourOf(p.t)]++;
+  const top = count.map((n, h) => ({ h, n })).filter((x) => x.n).sort((a, b) => b.n - a.n).slice(0, 4).map((x) => x.h).sort((a, b) => a - b);
+  const ranges = [];
+  for (const h of top) {
+    const last = ranges[ranges.length - 1];
+    if (last && h === last[1] + 1) last[1] = h; else ranges.push([h, h]);
+  }
+  return ranges.map(([a, b]) => `${pad2(a)}.00–${pad2(b + 1)}.00`).join(', ');
+}
+const pad2 = (n) => String(n).padStart(2, '0');
+
+function analyze(h, s) {
+  const out = [];
+  const pts = h.points.filter((p) => p.down != null);
+  const S = h.summary;
+  if (!pts.length) {
+    out.push({ lvl: 'info', title: 'Riwayat belum cukup', text: 'Temuan otomatis muncul setelah monitoring berjalan beberapa menit. Biarkan PC ini tetap menyala.' });
+    return out;
+  }
+  const lim = (s && s.limits && s.limits.down) || Math.max(0, ...pts.map((p) => p.lim || 0));
+  const isBusy = (p) => lim && p.down >= 0.85 * lim;
+
+  // 1. Kapasitas bandwidth
+  if (lim) {
+    const busy = pts.filter(isBusy);
+    const share = busy.length / pts.length;
+    if (share >= 0.05) {
+      out.push({
+        lvl: share >= 0.2 ? 'bad' : 'warn',
+        title: `Bandwidth penuh ${pctFmt(share)} dari waktu`,
+        text: `Rata-rata download mencapai ≥85% dari batas ${bps(lim)}, paling sering pukul ${busiestHours(busy)}. Di jam itu WiFi terasa lambat karena kapasitas IndiHome dipakai bersama. QoS menahan streaming/download supaya BAKUDAPA dan office tetap jalan; kalau masih kurang, kapasitas internet perlu ditambah.`,
+      });
+    } else {
+      out.push({ lvl: 'good', title: 'Bandwidth jarang penuh', text: `Download ≥85% batas hanya ${pctFmt(share)} dari waktu. Kalau tetap terasa lambat, penyebabnya bukan kapasitas — lihat temuan ping dan IP DHCP.` });
+    }
+  }
+
+  // 2. Ping internet vs modem -> lambat dari mana?
+  const inet = stats(pts.map((p) => p.ping && p.ping.inet && p.ping.inet.rtt));
+  const inetLoss = stats(pts.map((p) => p.ping && p.ping.inet && p.ping.inet.loss));
+  const gw = stats(pts.map((p) => p.ping && p.ping.gw && p.ping.gw.rtt));
+  const gwLoss = stats(pts.map((p) => p.ping && p.ping.gw && p.ping.gw.loss));
+  const gwBad = gw && (gw.avg >= 20 || (gwLoss && gwLoss.avg >= 1));
+  if (gwBad) {
+    out.push({ lvl: 'bad', title: 'Modem IndiHome lambat merespons', text: `Ping ke modem rata-rata ${ms(gw.avg)} (normal di bawah 10 ms)${gwLoss && gwLoss.avg ? `, loss ${nf1.format(gwLoss.avg)}%` : ''}. Masalah ada di modem atau kabel modem↔MikroTik: coba restart modem, cek kabel ether1, atau lapor ke IndiHome.` });
+  }
+  if (inet) {
+    const slow = pts.filter((p) => p.ping && p.ping.inet && (p.ping.inet.rtt == null || p.ping.inet.rtt > 150 || p.ping.inet.loss >= 5));
+    const slowShare = slow.length / inet.n;
+    const lossAvg = inetLoss ? inetLoss.avg : 0;
+    if (slowShare >= 0.05 || inet.avg > 150 || lossAvg >= 3) {
+      const busyShare = slow.length ? slow.filter(isBusy).length / slow.length : 0;
+      const cause = gwBad
+        ? 'Karena ping ke modem juga buruk, sumbernya di modem/kabel ke modem.'
+        : busyShare >= 0.6
+          ? 'Sebagian besar terjadi saat bandwidth kantor sendiri sedang penuh — antrean penuh membuat ping naik.'
+          : 'Ping ke modem normal dan bandwidth kantor tidak penuh, jadi lambatnya dari sisi IndiHome (jaringan 1:8 sedang padat). Data ini bisa dipakai untuk komplain ke IndiHome.';
+      out.push({
+        lvl: slowShare >= 0.2 || inet.avg > 150 ? 'bad' : 'warn',
+        title: `Internet lambat ${pctFmt(slowShare)} dari waktu`,
+        text: `Ping internet rata-rata ${ms(inet.avg)}, 5% terburuk ${ms(inet.p95)}, loss rata-rata ${nf1.format(lossAvg)}%. Paling sering pukul ${busiestHours(slow)}. ${cause}`,
+      });
+    } else {
+      out.push({ lvl: 'good', title: 'Ping internet stabil', text: `Rata-rata ${ms(inet.avg)}, 5% terburuk ${ms(inet.p95)}, loss ${nf1.format(lossAvg)}%.` });
+    }
+  }
+  for (const t of (h.pingTargets || []).filter((x) => x.role === 'site')) {
+    const st = stats(pts.map((p) => p.ping && p.ping[t.key] && p.ping[t.key].rtt));
+    const lo = stats(pts.map((p) => p.ping && p.ping[t.key] && p.ping[t.key].loss));
+    if (!st) continue;
+    if (st.avg > 200 || (lo && lo.avg >= 5)) out.push({ lvl: 'warn', title: `${t.label} lambat dijangkau`, text: `Ping ke ${t.address} rata-rata ${ms(st.avg)}, loss ${nf1.format(lo ? lo.avg : 0)}%. Kalau ping internet normal, kemungkinan server ${t.label} sendiri yang lambat.` });
+    else out.push({ lvl: 'good', title: `${t.label} terjangkau baik`, text: `Ping ke ${t.address} rata-rata ${ms(st.avg)}, 5% terburuk ${ms(st.p95)}.` });
+  }
+
+  // 3. Putus total
+  if (S.offline > 0) {
+    const o = S.outages[0];
+    out.push({
+      lvl: S.offline >= 10 || S.outages.length >= 3 ? 'bad' : 'warn',
+      title: `Router tak terjangkau ${durFmt(S.offline)} (${nf0.format(S.outages.length)} kali)`,
+      text: `Terlama ${durFmt(o.minutes)} mulai ${dateTimeFmt(o.start)}. Saat itu PC monitoring menyala tapi router di Ternate tidak bisa dihubungi — biasanya internet IndiHome putus, modem/router mati listrik, atau router reboot.`,
+    });
+  } else if (S.recorded) {
+    out.push({ lvl: 'good', title: 'Tidak ada putus koneksi ke router', text: `Router terus terjangkau selama ${durFmt(S.recorded)} yang tercatat.` });
+  }
+
+  // 4. IP DHCP habis -> WiFi "tersambung tapi tidak bisa akses"
+  const size = Math.max(0, ...pts.map((p) => p.poolSize || 0));
+  const usedMax = Math.max(0, ...pts.map((p) => p.poolUsed || 0));
+  if (size) {
+    const ratio = usedMax / size;
+    const full = pts.filter((p) => p.poolUsed != null && p.poolUsed >= 0.9 * size);
+    const lease = s && s.health && s.health.pool && s.health.pool.leaseTime;
+    if (ratio >= 0.75) {
+      out.push({
+        lvl: ratio >= 0.9 ? 'bad' : 'warn',
+        title: ratio >= 0.9 ? 'IP DHCP WiFi hampir habis' : 'IP DHCP WiFi mulai penuh',
+        text: `Puncak ${nf0.format(usedMax)} dari ${nf0.format(size)} IP terpakai${full.length ? `, paling penuh pukul ${busiestHours(full)}` : ''}. Kalau habis, HP/laptop baru tidak dapat IP — gejalanya "WiFi tersambung tapi tidak ada internet" atau gagal konek. Saran: perpendek lease-time${lease ? ` (sekarang ${esc(lease)})` : ''} menjadi 1–2 jam, atau perbesar pool.`,
+      });
+    } else {
+      out.push({ lvl: 'good', title: 'IP DHCP WiFi cukup', text: `Puncak ${nf0.format(usedMax)} dari ${nf0.format(size)} IP terpakai (${pctFmt(ratio)}).` });
+    }
+  }
+
+  // 5. Kabel / port putus-sambung
+  const lanDowns = pts.reduce((a, p) => a + (p.lanDowns || 0), 0);
+  const wanDowns = pts.reduce((a, p) => a + (p.wanDowns || 0), 0);
+  if (lanDowns) out.push({ lvl: 'warn', title: `Link ${esc((s && s.lanIf) || 'ether4')} ke WiFi putus-sambung ${nf0.format(lanDowns)} kali`, text: 'Port ke access point WiFi sempat mati. Cek kabel LAN, adaptor/PoE access point, dan colokan listriknya — ini sering jadi penyebab WiFi tiba-tiba hilang.' });
+  if (wanDowns) out.push({ lvl: 'warn', title: `Kabel ke modem IndiHome putus-sambung ${nf0.format(wanDowns)} kali`, text: 'Port ether1 (internet) sempat mati. Cek kabel modem↔MikroTik dan listrik modem.' });
+
+  // 6. CPU router
+  const cpu = Math.max(0, ...pts.map((p) => p.cpu || 0));
+  if (cpu >= 85) out.push({ lvl: 'warn', title: `CPU router sempat ${nf0.format(cpu)}%`, text: 'Router bekerja terlalu berat. Kalau sering terjadi bersamaan dengan lambat, pertimbangkan menyederhanakan rule firewall/QoS.' });
+
+  // 7. Info: QoS menahan streaming, PC monitoring mati
+  const bulkDrop = pts.reduce((a, p) => a + ((p.drop && p.drop.bulk) || 0), 0);
+  if (bulkDrop) out.push({ lvl: 'info', title: `QoS menahan ${nf0.format(bulkDrop)} paket streaming/download`, text: 'Ini normal: trafik prioritas rendah dikorbankan supaya BAKUDAPA, chat, dan office tetap lancar saat bandwidth penuh.' });
+  const pcOff = Math.max(0, S.expected - S.recorded);
+  if (pcOff >= 10) out.push({ lvl: 'info', title: `PC monitoring mati/sleep ${durFmt(pcOff)}`, text: `Pada waktu itu tidak ada data yang tercatat${S.gaps[0] ? ` (terlama mulai ${dateTimeFmt(S.gaps[0].start)})` : ''}. Atur Windows supaya tidak sleep agar riwayat lengkap.` });
+
+  const order = { bad: 0, warn: 1, info: 2, good: 3 };
+  return out.sort((a, b) => order[a.lvl] - order[b.lvl]);
+}
+
+function renderFindings(h, s) {
+  const list = analyze(h, s);
+  const n = (l) => list.filter((f) => f.lvl === l).length;
+  $('#counts').innerHTML = [['bad', 'Masalah'], ['warn', 'Perhatian'], ['good', 'Baik']]
+    .map(([l, t]) => `<div class="count"><b>${n(l)}</b><span><span class="dot ${l}"></span>${t}</span></div>`).join('');
+  $('#findings').innerHTML = list.map((f) => `<li><span class="bar ${f.lvl === 'info' ? '' : f.lvl}"></span>
+    <div><div class="f-h"><b>${f.title}</b><span class="lvl">${FINDING_TEXT[f.lvl]}</span></div><p>${f.text}</p></div></li>`).join('');
+  const S = h.summary;
+  const range = { 6: '6 jam', 24: '24 jam', 168: '7 hari' }[histHours] || `${histHours} jam`;
+  $('#alertHint').textContent = `dari riwayat ${range}`;
+  $('#anaHint').textContent = h.firstT
+    ? `Riwayat dicatat sejak ${dateTimeFmt(h.firstT)} · ${durFmt(S.recorded)} data pada rentang ini · 1 titik grafik = ${h.bucketMin} menit`
+    : 'Belum ada riwayat tersimpan';
+}
+
+function renderUsage(h) {
+  const list = h.usage || [];
+  if (!list.length) {
+    $('#usage').innerHTML = '<tr><td colspan="6"><p class="empty">Belum ada pemakaian tercatat hari ini.</p></td></tr>';
+    return;
+  }
+  const max = Math.max(1, ...list.map((u) => u.down + u.up));
+  const all = list.reduce((a, u) => a + u.down + u.up, 0);
+  $('#usage').innerHTML = list.map((u) => {
+    const total = u.down + u.up;
+    return `<tr>
+      <td class="host"><b title="${esc(u.name || '(tanpa nama)')}">${esc(u.name || '(tanpa nama)')}</b><small>${esc(u.mac || '–')}</small></td>
+      <td class="ip">${esc(u.ip)}</td>
+      <td class="num">${bytes(u.down)}</td>
+      <td class="num">${bytes(u.up)}</td>
+      <td class="num"><b>${bytes(total)}</b></td>
+      <td><div class="usage-bar" style="width:${((total / max) * 100).toFixed(1)}%" title="${pctFmt(total / Math.max(1, all))} dari 15 teratas"></div></td>
+    </tr>`;
+  }).join('');
+  $('#usageHint').textContent = `${h.usageDate} · sejak pukul 00.00`;
+}
+
+function renderHistory() {
+  if (!hist) return;
+  renderFindings(hist, state);
+  renderHistoryCharts(hist);
+  renderUsage(hist);
+}
+
+async function refreshHistory() {
+  try {
+    const res = await fetch('/api/history?hours=' + histHours, { cache: 'no-store' });
+    hist = await res.json();
+    renderHistory();
+  } catch (e) {
+    $('#anaHint').textContent = 'Riwayat gagal dimuat: ' + e.message;
+  }
+}
+
+// ---------- Hover tooltip untuk batang QoS & komposisi client ----------
+document.addEventListener('mousemove', (e) => {
+  const seg = e.target.closest('[data-tip-seg]');
+  const row = e.target.closest('[data-tip]');
+  if (seg) {
+    const [label, v] = seg.dataset.tipSeg.split('|');
+    showTip(`<div class="t">${label}</div><div class="row"><span>Saat ini</span><b>${v}</b></div>`, e.clientX, e.clientY);
+  } else if (row) {
+    const [label, down, up, dev, drop] = row.dataset.tip.split('|');
+    showTip(`<div class="t">${label}</div>
+      <div class="row"><span>Download</span><b>${down}</b></div>
+      <div class="row"><span>Upload</span><b>${up}</b></div>
+      <div class="row"><span>Perangkat</span><b>${dev}</b></div>
+      <div class="row"><span>Paket ditahan</span><b>${nf0.format(Number(drop))}</b></div>`, e.clientX, e.clientY);
+  } else if (!e.target.closest('#chart, .hchart')) {
+    $('#tip').hidden = true;
+  }
+});
+
+function renderAll() {
+  if (!state) return;
+  renderStatus(state);
+  renderTopology(state);
+  renderGauges(state);
+  if (!state.wan) return;
+  renderChart(state);
+  renderQos(state);
+  renderBlocked(state);
+  renderClients(state);
+}
+
+async function refresh() {
+  try {
+    const res = await fetch('/api/snapshot', { cache: 'no-store' });
+    state = await res.json();
+  } catch (e) {
+    state = { ...(state || {}), ok: false, time: state ? state.time : Date.now(), errors: ['Server monitoring di PC tidak merespons: ' + e.message], pollMs: 3000, clients: (state && state.clients) || [] };
+  }
+  renderAll();
+  setTimeout(refresh, (state && state.pollMs) || 3000);
+}
+
+['#q', '#onlyOnline', '#sort'].forEach((s) => $(s).addEventListener('input', () => state && state.wan && renderClients(state)));
+new ResizeObserver(() => state && state.wan && renderChart(state)).observe($('#chart'));
+new ResizeObserver(() => hist && renderHistoryCharts(hist)).observe($('#hBw'));
+$('#range').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-h]');
+  if (!b) return;
+  histHours = Number(b.dataset.h);
+  $('#range').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+  refreshHistory();
+});
+renderLegend();
+refresh();
+refreshHistory();
+setInterval(refreshHistory, 60000);
+</script>
+</body>
+</html>

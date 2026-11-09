@@ -1,0 +1,29 @@
+MONITOR WIFI KOTA TERNATE (172.19.26.x)
+========================================
+
+Buka dashboard : http://localhost:8090   (shortcut "Monitor WiFi Ternate" di Desktop)
+Dari PC/HP lain: http://172.25.10.253:8090  (IP PC ini; atur lewat LISTEN_HOST di .env)
+
+Cara kerja
+- Menyala otomatis setiap login Windows (shortcut di folder Startup).
+- Supaya menyala saat PC hidup tanpa perlu login: klik dua kali
+  pasang-tanpa-login.cmd (cukup sekali). Hasilnya Scheduled Task
+  "Monitor WiFi Ternate"; hapus task itu untuk kembali ke cara lama.
+- Server membuka tunnel SSH ke MikroTik sendiri (pakai SSH key, tanpa password)
+  dan menyambung ulang otomatis kalau internet Ternate putus.
+- Riwayat per menit disimpan di folder data\ (90 hari), bisa diunduh sebagai CSV
+  dari dashboard (tombol "Unduh CSV hari ini") untuk laporan/komplain IndiHome.
+- Rekap 7 hari untuk dashboard "Rekap Mingguan WiFi Ternate": klik dua kali
+  buat-rekap.cmd (tiap Senin), lalu ganti file di Sources dashboard itu.
+
+File penting
+- .env                 : setting + password user webmon (JANGAN dibagikan)
+- logs\server.log      : catatan tunnel putus/sambung dan error
+- mulai-monitor.vbs    : menyalakan monitoring (tanpa jendela)
+- berhenti-monitor.cmd : menghentikan monitoring (minta izin Administrator)
+- C:\Users\GILANG\.ssh\mt_ternate_webmon : SSH key untuk tunnel (JANGAN dibagikan)
+
+Catatan
+- PC ini harus menyala dan tidak sleep supaya riwayat lengkap.
+- Kalau PC monitoring diganti: cabut akses key lama di MikroTik dengan
+  /user ssh-keys remove [find user="webmon"]
