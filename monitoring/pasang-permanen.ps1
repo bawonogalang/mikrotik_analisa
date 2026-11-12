@@ -8,7 +8,7 @@ $src = $PSScriptRoot
 $dst = Join-Path $env:USERPROFILE 'MonitorTernate'
 
 New-Item -ItemType Directory -Force -Path $dst, (Join-Path $dst 'public') | Out-Null
-foreach ($f in 'server.js', 'jalan-terus.cmd', 'mulai-monitor.vbs', 'berhenti-monitor.cmd', 'pasang-tanpa-login.cmd', 'pasang-tanpa-login.ps1', 'rekap-mingguan.js', 'buat-rekap.cmd', '.env.example', 'BACA-SAYA.txt') {
+foreach ($f in 'server.js', 'jalan-terus.cmd', 'mulai-monitor.vbs', 'berhenti-monitor.cmd', 'pasang-tanpa-login.cmd', 'pasang-tanpa-login.ps1', 'rekap-mingguan.js', 'buat-rekap.cmd', 'restart-monitor.cmd', 'routers.example.json', '.env.example', 'BACA-SAYA.txt') {
   Copy-Item (Join-Path $src $f) $dst -Force
 }
 Copy-Item (Join-Path $src 'public\index.html') (Join-Path $dst 'public') -Force
@@ -19,7 +19,7 @@ if (-not (Test-Path $envFile)) { Copy-Item (Join-Path $src '.env') $envFile }
 $existing = (Get-Content $envFile) -replace '\s*=.*$', ''
 $add = @()
 foreach ($line in Get-Content (Join-Path $src '.env.example')) {
-  if ($line -match '^(SSH_|TUNNEL_|PING_|KEEP_|LISTEN_)[A-Z_]*=' -and ($existing -notcontains ($line -replace '\s*=.*$', ''))) { $add += $line }
+  if ($line -match '^(SSH_|TUNNEL_|PING_|KEEP_|LISTEN_|ROUTER_)[A-Z_]*=' -and ($existing -notcontains ($line -replace '\s*=.*$', ''))) { $add += $line }
 }
 if ($add.Count) { Add-Content -Path $envFile -Encoding ascii -Value (@('', '# Ditambahkan oleh pasang-permanen.ps1') + $add) }
 

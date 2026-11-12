@@ -13,3 +13,6 @@ rekap/
 
 # Pengaturan lokal editor/Claude
 .claude/
+
+# Daftar router tambahan (berisi alamat router dan bisa berisi password)
+routers.json

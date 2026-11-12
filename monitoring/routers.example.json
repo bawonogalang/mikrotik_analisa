@@ -1,0 +1,38 @@
+{
+  "_petunjuk": [
+    "Salin file ini menjadi routers.json untuk memantau router TAMBAHAN. Router utama tetap diatur di .env.",
+    "Tiap router butuh user read-only webmon + SSH key (setup-router-monitor.rsc dan setup-permanen.rsc).",
+    "Lewat tunnel SSH: isi sshHost, sshPort dan tunnelTarget (IP router di LAN-nya + port www, biasanya :80).",
+    "Lewat VPN tanpa tunnel: kosongkan sshHost dan isi url, mis. http://10.10.10.2:80.",
+    "pass boleh dikosongkan kalau password webmon sama dengan MT_PASS di .env.",
+    "Ubah enabled menjadi false untuk berhenti memantau satu router tanpa menghapusnya.",
+    "Setelah mengubah file ini, jalankan ulang monitoring (klik dua kali restart-monitor.cmd)."
+  ],
+  "routers": [
+    {
+      "id": "sofifi",
+      "name": "Sofifi",
+      "enabled": true,
+      "sshHost": "xxxxxxxxxxx.sn.mynetname.net",
+      "sshPort": 22,
+      "tunnelTarget": "192.168.10.1:80",
+      "localPort": 18081,
+      "pass": "",
+      "lanPrefix": "192.168.10.",
+      "wanIf": "ether1",
+      "lanIf": "bridge",
+      "gwLabel": "Modem IndiHome",
+      "pingTargets": "Internet=8.8.8.8"
+    },
+    {
+      "id": "tidore",
+      "name": "Tidore",
+      "enabled": false,
+      "url": "http://10.10.10.3:80",
+      "lanPrefix": "192.168.20.",
+      "wanIf": "ether1",
+      "lanIf": "bridge",
+      "pingTargets": "Internet=8.8.8.8"
+    }
+  ]
+}

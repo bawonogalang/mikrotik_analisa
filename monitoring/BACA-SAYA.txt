@@ -16,11 +16,21 @@ Cara kerja
 - Rekap 7 hari untuk dashboard "Rekap Mingguan WiFi Ternate": klik dua kali
   buat-rekap.cmd (tiap Senin), lalu ganti file di Sources dashboard itu.
 
+Banyak router (lokasi lain)
+- Router utama (Kota Ternate) tetap diatur di .env.
+- Router tambahan: salin routers.example.json menjadi routers.json, isi satu
+  baris per router, lalu klik dua kali restart-monitor.cmd.
+- Tiap router baru perlu user read-only webmon dan SSH key: impor
+  setup-router-monitor.rsc dan setup-permanen.rsc di router itu.
+- Dashboard menampilkan halaman "Semua lokasi"; klik satu lokasi untuk detail.
+  Riwayat router tambahan disimpan di data\<id>\.
+
 File penting
 - .env                 : setting + password user webmon (JANGAN dibagikan)
 - logs\server.log      : catatan tunnel putus/sambung dan error
 - mulai-monitor.vbs    : menyalakan monitoring (tanpa jendela)
 - berhenti-monitor.cmd : menghentikan monitoring (minta izin Administrator)
+- restart-monitor.cmd  : menjalankan ulang monitoring (setelah ubah routers.json)
 - C:\Users\GILANG\.ssh\mt_ternate_webmon : SSH key untuk tunnel (JANGAN dibagikan)
 
 Catatan
